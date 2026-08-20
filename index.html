@@ -43,14 +43,6 @@
             box-shadow: none;
         }
 
-        .btn-secondary {
-            background-color: #fffbeb;
-            color: #78350f;
-            border: 1px solid rgba(146, 64, 14, 0.25);
-            transition: all 0.2s ease;
-        }
-        .btn-secondary:active { background-color: #fef3c7; }
-
         .loader {
             border: 3px solid #f3f3f3;
             border-top: 3px solid #92400e;
@@ -176,7 +168,6 @@
             -->
             <div class="upload-area rounded-xl p-6 text-center cursor-pointer relative bg-amber-50/20" id="dropZone">
                 <input type="file" id="fileInput" class="hidden" multiple>
-                <input type="file" id="cameraInput" class="hidden" accept="image/*" capture="environment">
 
                 <div id="uploadPrompt">
                     <i class="fa-solid fa-cloud-arrow-up text-3xl text-amber-700 mb-2"></i>
@@ -192,11 +183,6 @@
                     <ul id="fileList" class="text-xs text-gray-600 space-y-1.5 max-h-36 overflow-y-auto pr-1"></ul>
                 </div>
             </div>
-
-            <!-- Kamera için ayrı, net bir yol. Böylece ana buton her zaman galeriyi/dosyaları açar. -->
-            <button type="button" id="cameraBtn" class="w-full btn-secondary py-2.5 px-4 rounded-xl font-medium text-sm flex items-center justify-center">
-                <i class="fa-solid fa-camera mr-2"></i> Kamera ile Çek
-            </button>
 
             <button type="submit" id="submitBtn" disabled class="w-full btn-primary py-3 px-4 rounded-xl font-semibold text-base flex items-center justify-center shadow-md">
                 <span>Anıları Yükle</span>
@@ -214,8 +200,6 @@
 
         const dropZone = document.getElementById('dropZone');
         const fileInput = document.getElementById('fileInput');
-        const cameraInput = document.getElementById('cameraInput');
-        const cameraBtn = document.getElementById('cameraBtn');
         const uploadPrompt = document.getElementById('uploadPrompt');
         const filePreview = document.getElementById('filePreview');
         const fileList = document.getElementById('fileList');
@@ -262,15 +246,10 @@
 
         /* ---------- Dosya seçimi ---------- */
         dropZone.addEventListener('click', () => fileInput.click());
-        cameraBtn.addEventListener('click', () => cameraInput.click());
 
         fileInput.addEventListener('change', () => {
             addFiles(fileInput.files);
             fileInput.value = '';
-        });
-        cameraInput.addEventListener('change', () => {
-            addFiles(cameraInput.files);
-            cameraInput.value = '';
         });
 
         dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
@@ -328,7 +307,6 @@
 
         function clearSelection() {
             fileInput.value = '';
-            cameraInput.value = '';
             selectedFiles = [];
             uploadPrompt.classList.remove('hidden');
             filePreview.classList.add('hidden');
@@ -346,7 +324,6 @@
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<div class="loader"></div> Yükleniyor... (0/' + selectedFiles.length + ')';
             dropZone.style.pointerEvents = 'none';
-            cameraBtn.disabled = true;
 
             showStatus('Anılarınız buluta aktarılıyor, lütfen sayfayı kapatmayın...', 'info');
 
@@ -404,7 +381,6 @@
             await Promise.all(uploadPromises);
 
             dropZone.style.pointerEvents = 'auto';
-            cameraBtn.disabled = false;
             submitBtn.innerHTML = 'Anıları Yükle';
 
             if (successCount > 0 && errorCount === 0) {
