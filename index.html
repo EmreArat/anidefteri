@@ -174,14 +174,14 @@
                     <p class="text-gray-700 font-medium text-sm">Fotoğraf veya Video Seçin</p>
                     <p class="text-[11px] text-gray-400 mt-1">Birden fazla dosya seçebilirsiniz</p>
                 </div>
+            </div>
 
-                <div id="filePreview" class="hidden text-left">
-                    <div class="flex justify-between items-center mb-2 border-b border-amber-900/10 pb-1">
-                        <h3 class="text-xs font-bold text-amber-900 uppercase tracking-wide">Seçilen Dosyalar</h3>
-                        <button type="button" class="text-xs text-red-500 hover:text-red-700 underline font-medium" onclick="event.stopPropagation(); clearSelection()">Tümünü Temizle</button>
-                    </div>
-                    <ul id="fileList" class="text-xs text-gray-600 space-y-1.5 max-h-36 overflow-y-auto pr-1"></ul>
+            <div id="filePreview" class="hidden text-left">
+                <div class="flex justify-between items-center mb-2 border-b border-amber-900/10 pb-1">
+                    <h3 class="text-xs font-bold text-amber-900 uppercase tracking-wide">Seçilen Dosyalar (<span id="fileCount">0</span>)</h3>
+                    <button type="button" class="text-xs text-red-500 hover:text-red-700 underline font-medium" onclick="clearSelection()">Tümünü Temizle</button>
                 </div>
+                <ul id="fileList" class="text-xs text-gray-600 space-y-1.5 max-h-36 overflow-y-auto pr-1"></ul>
             </div>
 
             <button type="submit" id="submitBtn" disabled class="w-full btn-primary py-3 px-4 rounded-xl font-semibold text-base flex items-center justify-center shadow-md">
@@ -206,6 +206,7 @@
         const submitBtn = document.getElementById('submitBtn');
         const uploadForm = document.getElementById('uploadForm');
         const statusMessage = document.getElementById('statusMessage');
+        const fileCount = document.getElementById('fileCount');
         let selectedFiles = [];
 
         /* ---------- MIME tespiti ----------
@@ -267,11 +268,28 @@
             updateUI();
         }
 
-        function updateUI() {
+        function renderPrompt() {
             if (selectedFiles.length > 0) {
-                uploadPrompt.classList.add('hidden');
+                uploadPrompt.innerHTML = `
+                    <i class="fa-solid fa-circle-plus text-2xl text-amber-700 mb-1"></i>
+                    <p class="text-gray-700 font-medium text-sm">Daha Fazla Ekle</p>
+                    <p class="text-[11px] text-gray-400 mt-1">Yeni fotoğraf/video eklemek için buraya tıklayın</p>
+                `;
+            } else {
+                uploadPrompt.innerHTML = `
+                    <i class="fa-solid fa-cloud-arrow-up text-3xl text-amber-700 mb-2"></i>
+                    <p class="text-gray-700 font-medium text-sm">Fotoğraf veya Video Seçin</p>
+                    <p class="text-[11px] text-gray-400 mt-1">Birden fazla dosya seçebilirsiniz</p>
+                `;
+            }
+        }
+
+        function updateUI() {
+            renderPrompt();
+            if (selectedFiles.length > 0) {
                 filePreview.classList.remove('hidden');
                 submitBtn.disabled = false;
+                if (fileCount) fileCount.textContent = selectedFiles.length;
 
                 fileList.innerHTML = '';
                 selectedFiles.forEach((file, index) => {
@@ -308,10 +326,10 @@
         function clearSelection() {
             fileInput.value = '';
             selectedFiles = [];
-            uploadPrompt.classList.remove('hidden');
             filePreview.classList.add('hidden');
             submitBtn.disabled = true;
             statusMessage.classList.add('hidden');
+            renderPrompt();
         }
 
         /* ---------- Yükleme ---------- */
